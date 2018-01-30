@@ -1,0 +1,297 @@
+body {
+    font-family: sans-serif;
+    font-size: 14px;
+}
+
+a {
+    text-decoration: none;
+}
+
+.a_btn {
+    background-color: rgb(153,180,209);
+    color: black;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    padding: 2px 5px;
+}
+
+#div_main_forum {
+    width:70%;
+    background-color: #f5f5f5;
+    margin: auto;
+    padding: 20px;
+}
+
+#div_title_page {
+    width: 10%;
+    background-color: #f5f5f5;
+    padding: 10px;
+    text-align: center;
+}
+
+#div_head {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+    background-color: #f5f5f5;
+}
+
+#div_head a {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#div_head h2 {
+    /* flex-basis: 300px; */
+    padding-top : 7px;
+    margin: 0px;
+}
+#div_head h3 {
+    /* flex-basis: 300px; */
+    padding-top : 10px;
+    margin: 0px;
+}
+
+.user_role {
+    color: green;
+}
+
+.user_moderator {
+    color: blue;
+}
+
+.user_admin {
+    color: red;
+}
+
+#connection {
+    display: flex;
+    justify-content: space-around;
+}
+
+legend {
+    font-weight: bold;
+    margin: 5px;
+    
+}
+
+fieldset {
+    background-color: rgb(192,192,180);
+}
+
+#form_create_login, #form_create_topic, #form_create_post, #form_update_post {
+    display: flex;
+    justify-content: center;
+}
+
+form input[type='text'], input[type='password'], textarea, select {
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+input[type='submit'] {
+    /* background-color: rgb(208,220,224); */
+    background-color: rgb(153,180,209);
+    /* font-size: inherit; */
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    padding: 2px 5px;
+}
+
+input[type='text'], input[type='password'], textarea {
+    background-color: rgb(208,220,224);
+    border: 1px solid lightgray;
+}
+
+select {
+    background-color: rgb(247,247,255); 
+    border: 1px solid lightgray;
+    /* border-radius: 5px; */
+}
+
+#div_forms_forum input[type='submit'] {
+    padding: 5px;
+}
+
+.error {
+    color: red;
+    margin-left: 20px;
+}
+
+.msg_info {
+    color: green;
+    margin-left: 20px;
+}
+
+.title_page {
+    margin-bottom: 10px;
+}
+
+#div_forms_forum {
+    display: flex;
+    justify-content: center;
+}
+
+.form_forum {
+    margin-right: 100px;
+}
+
+#pages {
+    padding-top: 10px;
+    padding-bottom: 30px;
+}
+
+#divPages {
+    display: flex; 
+    justify-content: center;
+    margin: auto;
+    border: 1px solid black;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    width: 600px;
+    background-color: rgb(153,180,209);
+}
+
+#divPages a {
+    color: black;
+}
+
+.aPageNum {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.aPagePred {
+    margin-right: 30px;
+}
+
+.aPageNext {
+    margin-left: 30px;
+}
+
+table {
+    margin: auto;
+    border-collapse: collapse; 
+    font-size: inherit;
+}
+
+table a {
+    color: black;
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 5px;
+}
+
+.tr_pair {
+    background-color: rgb(247,247,255); 
+}
+
+.tr_impair {
+    background-color: rgb(208,220,224);
+}
+
+th {
+    background-color: silver;;
+}
+
+.head_topic {
+    width: 500px;
+}
+
+.head_category {
+    width: 120px;
+}
+
+.head_author {
+    width: 120px;
+}
+
+.head_nb {
+    width: 60px;
+}
+
+.head_last_msg {
+    width: 180px;
+}
+
+.head_delete_topic {
+    width: 100px;
+}
+
+.td_center {
+    text-align: center;
+}
+
+.a_del {
+    width: 40px;
+    height: 28px;
+    display: block;
+	text-indent: -30000px;
+	background: url('../img/delete.jpg') center center no-repeat;
+    background-size: 50%;
+    margin: auto;
+}
+
+th, tr {
+    height: 30px;
+}
+
+#head_posts {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+#head_posts a {
+    padding-top: 5px;
+}
+
+#head_posts h3 {
+    margin: 0px 300px 0px 0px;
+}
+
+.title_topic {
+    padding: 5px;
+    background-color: rgb(208,220,224);
+}
+.title_category {
+    color: green;
+}
+
+.div_post {
+    width: 845px;
+    margin: auto;
+    border: 1px solid black;
+    margin-bottom: 20px;
+    padding: 10px 5px 5px 5px;
+    background-color: rgb(192,192,180);
+}
+
+.div_post a {
+    margin-left: 200px;
+}
+
+.pseudo {
+    font-weight: bold;
+    padding: 5px;
+    background-color: rgb(208,220,224);
+}
+
+hr {
+    color: lightgray;
+    margin: 10px 5px 5px 5px;
+}
+
+.div_post p {
+    background-color: rgb(247,247,255); 
+    padding: 5px;
+}
+
+#form_create_post,#form_update_post textarea {
+    margin-bottom: 10px;
+}
+
+
+

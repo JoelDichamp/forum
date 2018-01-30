@@ -1,0 +1,47 @@
+﻿Réalisation Forum
+
+
+-> Inscription / Connexion
+-> Droits d’utilisation (Admin, Modérateur, Utilisateur simple)
+
+
+-> Utilisateur simple : 1
+	-> Peut créer un sujet			CAN_CREATE_TOPIC	1
+	-> Peut poster sur un sujet 	CAN_POST_ON_TOPIC	3
+	-> Peut éditer ses posts 		CAN_EDIT_POST		4
+	-> Peut supprimer ses posts 	CAN_DELETE_POST		5
+
+
+-> Modérateur : 2
+	-> Peut créer un sujet 			CAN_CREATE_TOPIC	1
+    -> Peut poster sur un sujet		CAN_POST_ON_TOPIC	3
+	-> Peut éditer ses posts		CAN_EDIT_POST		4
+    -> Peut supprimer des posts		CAN_DELETE_ALL_POST	6
+
+
+-> Admin : 3
+	-> Peut créer un sujet			CAN_CREATE_TOPIC	1
+	-> Peut supprimer un sujet 		CAN_DELETE_TOPIC	2
+    -> Peut poster sur un sujet		CAN_POST_ON_TOPIC	3
+	-> Peut éditer ses posts		CAN_EDIT_POST		4
+    -> Peut supprimer des posts		CAN_DELETE_ALL_POST	6
+
+
+-> Pagination des sujets de discussion
+-> Lorsque l’on créé un sujet de discussion : Titre(sujet) de la discussion et Post de départ obligatoire !
+-> La date de création, le nom du créateur et le nombre de posts s’affichent dans chaque sujet de la liste 
+
+
+-> Poster sur un sujet affiche la date et le nom de l’utilisateur qui l’a posté (Pour la date : http://php.net/manual/fr/function.date.php )
+
+admin crée des catégoriesadmin et modo peuvent clore un sujet qui n'est accessible qu'en lecture
+
+
+
+
+
+
+-> Bonus: 
+         - Mettre les sujets dans des catégories définie à l’avance ( Exemple pour un forum développeur: Catégories PHP, Javascript, C, C++... ect. ) et trier les sujets par catégories !
+         - l'admin peut créer des catégories
+		 - Possibilité de clore un sujet pour les admins et les modérateurs

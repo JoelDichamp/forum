@@ -25,8 +25,17 @@ a {
 #div_title_page {
     width: 10%;
     background-color: #f5f5f5;
-    padding: 10px;
+    padding: 10px 10px 15px 10px;
     text-align: center;
+}
+
+#div_title_page h3 {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+#div_title_page a {
+    margin-bottom: 10px;
 }
 
 #div_head {
@@ -80,7 +89,7 @@ fieldset {
     background-color: rgb(192,192,180);
 }
 
-#form_create_login, #form_create_topic, #form_create_post, #form_update_post {
+#form_create_login, #form_create_topic, #form_create_post, #form_update_post, #form_confirm {
     display: flex;
     justify-content: center;
 }
@@ -168,6 +177,25 @@ select {
 
 .aPageNext {
     margin-left: 30px;
+}
+
+#div_radio input[type='radio'],label {
+    margin-top: 10px;
+}
+
+#label_oui {
+    margin-right:10px;
+}
+
+#form_confirm input[type='submit'] {
+    display: block;
+    margin: auto;
+    margin-top: 10px;
+}
+
+#div_radio {
+    display: flex;
+    justify-content: center;
 }
 
 table {
@@ -292,6 +320,12 @@ hr {
 #form_create_post,#form_update_post textarea {
     margin-bottom: 10px;
 }
+
+#form_update_post input[type='submit'] {
+    margin-right: 10px;
+}
+
+
 
 
 

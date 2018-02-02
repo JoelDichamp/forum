@@ -46,6 +46,10 @@
                 include "services/service_create_category.php";
                 break; 
 
+            case "close_topic": 
+                include "services/service_close_topic.php";
+                break; 
+
             default :
                 header("Location: ?page=login");
         }  
@@ -80,6 +84,9 @@
             break;
         case "create_category": 
             $page_file = "pages/create_category.php";
+            break; 
+        case "confirm_delete_topic": 
+            $page_file = "pages/confirm_delete_topic.php";
             break; 
 
         default:

@@ -65,18 +65,20 @@
         return $index_page;
     }
 
-    function BuildParams_posts_topic($param_posts_topic, $with_index_Page, $page = "page", $pageName = "posts_topic") {
-        $shtml = '?' . $page . '=' .$pageName . '&id_topic=' . $param_posts_topic["id_topic"] . 
-                    '&topic=' . $param_posts_topic["topic"] .
-                    '&category=' . $param_posts_topic["category"] .
-                    '&id_category=' . $param_posts_topic["id_category"] .
-                    '&last_msg_date=' . $param_posts_topic["last_msg_date"];
+    function buildParams_posts_topic($params_posts_topic, $with_index_Page, $page = "page", $pageName = "posts_topic") {
+        $shtml = '?' . $page . '=' .$pageName . '&id_topic=' . $params_posts_topic["id_topic"] . 
+                    '&topic=' . $params_posts_topic["topic"] .
+                    '&category=' . $params_posts_topic["category"] .
+                    '&topic_closed=' . $params_posts_topic["topic_closed"] .
+                    '&id_category=' . $params_posts_topic["id_category"] .
+                    '&last_msg_date=' . $params_posts_topic["last_msg_date"];
 
         if ($with_index_Page) {
-            $shtml .= '&index_page=' . $param_posts_topic["index_page"];
+            $shtml .= '&index_page=' . $params_posts_topic["index_page"];
         }
 
         return $shtml;
+        
     }
 
     function displayTopics() {
@@ -90,15 +92,14 @@
                 $shtml .= '<tr class="tr_impair">';
             }
 
-            $shtml .= '<td><a href="' . BuildParams_posts_topic($topic, false) . 
+            $shtml .= '<td><a href="' . buildParams_posts_topic($topic, false) . 
                       '&index_page=' . $index_page . '">' . $topic["topic"] . '</a></td>';
-
             $shtml .= '<td class="td_center">' . $topic["category"] . '</td>';
             $shtml .= '<td class="td_center">' . $topic["pseudo"] . '</td>';
             $shtml .= '<td class="td_center">' . $topic["nb_posts"] . '</td>';
             $shtml .= '<td class="td_center">' . $topic["last_msg_date"] . '</td>';
             if ( isset($_SESSION["login"]) && isGranted($_SESSION["login"]["id_role"], CAN_DELETE_TOPIC)) {
-                $shtml .= '<td><a class="a_del" href="?service=delete_topic&id_topic=' . $topic["id_topic"] .
+                $shtml .= '<td><a class="a_del" href="?page=confirm_delete_topic&topic=' . $topic["topic"] . '&id_topic=' . $topic["id_topic"] .
                           '&index_page=' . $index_page . '">S</a></td>';
             }
             $shtml .= '</tr>';
@@ -107,16 +108,16 @@
         return $shtml;
     }
 
-    function BuildAnchorManagePost( $action, $param_posts_topic, $index_page_posts, $id_post, $post_date = '' ) {
+    function BuildAnchorManagePost( $action, $params_posts_topic, $index_page_posts, $id_post, $post_date = '' ) {
         $params = '';
         switch ($action) {
 
             case "Modifier":
-                $params = BuildParams_posts_topic($param_posts_topic, true);
+                $params = buildParams_posts_topic($params_posts_topic, true);
             break;
 
             case "Supprimer":
-                $params = BuildParams_posts_topic($param_posts_topic, true, "service", "delete_post") .
+                $params = buildParams_posts_topic($params_posts_topic, true, "service", "delete_post") .
                           '&post_date=' . $post_date;
             break;
         }
@@ -126,14 +127,18 @@
         return $shtml;
     }
 
-    function createFormUpdate( $param_posts_topic, $post, $index_page_posts, $id_post ) {
-        $action = BuildParams_posts_topic($param_posts_topic, true, "service", "update_post") .
+    function createFormUpdate( $params_posts_topic, $post, $index_page_posts, $id_post ) {
+        $action = buildParams_posts_topic($params_posts_topic, true, "service", "update_post") .
                   '&index_page_posts=' . $index_page_posts . '&id_post=' . $id_post;
         $shtml = '<form id="form_update_post" action="' . $action . '" method="POST">';
         $shtml.= '<fieldset>';
         $shtml .= '<legend>Modification du message</legend>';
         $shtml .= '<textarea name="post" id="post" cols="100" rows="8">' . $post . '</textarea><br>';
         $shtml .= '<input type="submit" value="Modifier">';
+
+        $params = buildParams_posts_topic($params_posts_topic, true) . '&index_page_posts=' . $index_page_posts;
+        $shtml .= '<a class="a_btn" href="' . $params . '">Annuler</a>';
+
         if (isset($_GET["error_update"])) {
             $shtml .= '<scan class="error">' . $_GET["error_update"] . '</scan>';
         }
@@ -143,47 +148,64 @@
         return $shtml;
     }
 
-    function displayPosts( $param_posts_topic ) {
+    function editThePost( $post_id, $params_posts_topic, $index_page_posts, &$createFormUpdate) {
+        $shtml = BuildAnchorManagePost( "Modifier", $params_posts_topic, $index_page_posts, $post_id );
+        if ( ( $params_posts_topic["id_post"] == $post_id && !isset( $_GET["service_name"] ) ) ||
+                ( $params_posts_topic["id_post"] == $post_id && isset( $_GET["service_name"] ) &&
+                $_GET["service_name"] == "update") ) {
+
+            $createFormUpdate = true;
+        }
+
+        return $shtml;
+    }
+
+    function deleteThePost($post_id, $post_date, $params_posts_topic, $index_page_posts) {
+        $shtml = BuildAnchorManagePost( "Supprimer", $params_posts_topic, $index_page_posts, $post_id, $post_date );
+        if ( $params_posts_topic["id_post"] == $post_id && isset($_GET["error_delete"]) && 
+             isset($_GET["service_name"]) && $_GET["service_name"] == "delete") {
+            $shtml .= '<p class="error">' . $_GET["error_delete"] . '</p>';
+        }
+
+        return $shtml;
+    }
+
+    function displayPosts( $params_posts_topic ) {
         $index_page_posts = checkIndexPage("index_page_posts");
-        $posts = getPosts( $param_posts_topic["id_topic"], $index_page_posts );
+        $posts = getPosts( $params_posts_topic["id_topic"], $index_page_posts );
+        $firstPost = firstPost($params_posts_topic["id_topic"]);
         $shtml = '';
         $deletePost = false;
         foreach ($posts as $post) {
             $createFormUpdate = false;
             $shtml .= '<div class="div_post">';
             $shtml .= '<span class="pseudo">' . $post["pseudo"] . ' le ' .  $post["post_date"] . '</span>';
-            if ( isset($_SESSION["login"]) ) {
-                if ( $post["id_user"] == $_SESSION["login"]["id"] ) {
 
-                    if ( isGranted($_SESSION["login"]["id_role"], CAN_EDIT_POST) ) {
-                        $shtml .= BuildAnchorManagePost( "Modifier", $param_posts_topic, $index_page_posts, $post["id"] );
-                        if ( ( $param_posts_topic["id_post"] == $post["id"] && !isset( $_GET["service_name"] ) ) ||
-                             ( $param_posts_topic["id_post"] == $post["id"] && isset( $_GET["service_name"] ) &&
-                               $_GET["service_name"] == "update") ) {
+            if (!$params_posts_topic["topic_closed"]) { //si le sujet n'est pas fermé
+                if ( isset($_SESSION["login"]) ) { //on est loggé
+                    if ( $post["id_user"] == $_SESSION["login"]["id"] ) { //c'est est un des posts du user
 
-                            $createFormUpdate = true;
+                        if ( isGranted( $_SESSION["login"]["id_role"], CAN_EDIT_POST ) ) {
+                            $shtml .= editThePost( $post["id"], $params_posts_topic, $index_page_posts, $createFormUpdate );
+                            $deletePost = ( isGranted($_SESSION["login"]["id_role"], CAN_DELETE_POST) ||
+                                            isGranted($_SESSION["login"]["id_role"], CAN_DELETE_ALL_POST) );    
                         }
-                    $deletePost = ( isGranted($_SESSION["login"]["id_role"], CAN_DELETE_POST) ||
-                                    isGranted($_SESSION["login"]["id_role"], CAN_DELETE_ALL_POST) );    
+
+                    } else {
+                        $deletePost = isGranted($_SESSION["login"]["id_role"], CAN_DELETE_ALL_POST);
                     }
-                } else {
-                    $deletePost = isGranted($_SESSION["login"]["id_role"], CAN_DELETE_ALL_POST);
+                }
+
+                if ( $deletePost && $post["id"] != $firstPost ) { //on a le droit de supprimer et on n'est pas sur le post originel
+                    $shtml .= deleteThePost( $post["id"], $post["post_date"], $params_posts_topic, $index_page_posts );
                 }
             }
-
-            if ( $deletePost && $post["id"] != firstPost($param_posts_topic["id_topic"]) ) {
-                $shtml .= BuildAnchorManagePost( "Supprimer", $param_posts_topic, $index_page_posts,  $post["id"], $post["post_date"] );
-                if ( $param_posts_topic["id_post"] == $post["id"] && isset($_GET["error_delete"]) && 
-                     isset($_GET["service_name"]) && $_GET["service_name"] == "delete") {
-                    $shtml .= '<p class="error">' . $_GET["error_delete"] . '</p>';
-                }
-            }
-
+            
             $shtml .= '<hr>';
             $shtml .= '<p>' . nl2br($post["post"]) . '</p>';
             $shtml .= '</div>';
             if ($createFormUpdate) {
-                $shtml .= createFormUpdate( $param_posts_topic, $post["post"], $index_page_posts, $post["id"] );
+                $shtml .= createFormUpdate( $params_posts_topic, $post["post"], $index_page_posts, $post["id"] );
             }
         }
 
@@ -279,7 +301,7 @@
         return $divPages;
     }
 
-    function BuildAnchorPosts($param_posts_topic, $nPage, $index_page_posts, $classValue, $txtAnchor) {
+    function BuildAnchorPosts($params_posts_topic, $nPage, $index_page_posts, $classValue, $txtAnchor) {
         if (isset($classValue)) {
             $anchor = '<a class="' . $classValue . '"';
         } else {
@@ -291,7 +313,7 @@
                 $anchor .= ' style="color:black;font-weight:bold"';
             }
         }
-        $anchor .= ' href="' . BuildParams_posts_topic($param_posts_topic, true) .
+        $anchor .= ' href="' . buildParams_posts_topic($params_posts_topic, true) .
                    '&index_page_posts=' . $nPage .'">'; 
     
         if (isset($txtAnchor)) {
@@ -304,7 +326,7 @@
         return $anchor;
     }
 
-    function BuildListPagesPosts($index_page_posts, $nbPage, $param_posts_topic) {
+    function BuildListPagesPosts($index_page_posts, $nbPage, $params_posts_topic) {
         $nbViewPage = 7; //impair c'est mieux
         CalcViewPageInfAndSup($index_page_posts, $nbPage, $nbViewPage, $viewPageInf, $viewPageSup);
         //echo $index_page . ' ' . $nbPage . ' ' . $nbViewPage . ' ' . $viewPageInf . ' ' . $viewPageSup;
@@ -313,25 +335,25 @@
         $divPages = '<div id="divPages">';
         
         if ($index_page_posts > 1) {
-            $divPages .= BuildAnchorPosts($param_posts_topic, $index_page_posts-1, $index_page_posts, 'aPagePred', 'Précédent');
+            $divPages .= BuildAnchorPosts($params_posts_topic, $index_page_posts-1, $index_page_posts, 'aPagePred', 'Précédent');
         }
     
         for ($i = $viewPageInf; $i <= $viewPageSup; $i++) {
-            $divPages .= BuildAnchorPosts($param_posts_topic, $i, $index_page_posts, 'aPageNum', null);
+            $divPages .= BuildAnchorPosts($params_posts_topic, $i, $index_page_posts, 'aPageNum', null);
         }
     
         if ($index_page_posts < $nbPage) {
-            $divPages .= BuildAnchorPosts($param_posts_topic, $index_page_posts+1, $index_page_posts, 'aPageNext', 'Suivant');
+            $divPages .= BuildAnchorPosts($params_posts_topic, $index_page_posts+1, $index_page_posts, 'aPageNext', 'Suivant');
         }
         $divPages .= '</div>';
         
         return $divPages;
     }
 
-    function PutNavPagesPosts($index_page_posts, $param_posts_topic) {
-        $nbPage = calcNbPagePosts($param_posts_topic["id_topic"]);
+    function PutNavPagesPosts($index_page_posts, $params_posts_topic) {
+        $nbPage = calcNbPagePosts($params_posts_topic["id_topic"]);
 
-        return BuildListPagesPosts($index_page_posts, $nbPage, $param_posts_topic);
+        return BuildListPagesPosts($index_page_posts, $nbPage, $params_posts_topic);
     }
 
     function checkPost( &$error, &$post ) {
@@ -356,6 +378,7 @@
         //params de base
         if ( !filter_var( $_GET["id_topic"], FILTER_VALIDATE_INT ) ||
              !isset( $_GET["topic"] ) ||
+             !isset( $_GET["topic_closed"]) || //bug avec filter_var sur valeur 0, retourne false !!! (voir PHP manuel)
              !isset( $_GET["category"] ) ||
              !filter_var( $_GET["id_category"], FILTER_VALIDATE_INT ) ||
              !isset( $_GET["last_msg_date"] ) ||
@@ -363,7 +386,6 @@
             
             $ok = false;
         }
-       
         if ($ok) {
             
             if ( $paramsGet["index_page_posts"] ) {
@@ -380,10 +402,11 @@
         return $ok;
     }
 
-    function fill_param_posts_topic( $paramsGet ) {
-        $param_posts_topic = [
+    function fill_params_posts_topic( $paramsGet ) {
+        $params_posts_topic = [
             "id_topic" => $_GET["id_topic"],
             "topic" => $_GET["topic"],
+            "topic_closed" => $_GET["topic_closed"],
             "category" => $_GET["category"],
             "id_category" => $_GET["id_category"],
             "last_msg_date" => $_GET["last_msg_date"],
@@ -391,15 +414,15 @@
         ];
 
         if ( $paramsGet["index_page_posts"] ) {
-            $param_posts_topic ["index_page_posts"] = $_GET["index_page_posts"];
+            $params_posts_topic ["index_page_posts"] = $_GET["index_page_posts"];
         }
         if ( $paramsGet["id_post"] ) {
-            $param_posts_topic ["id_post"] = $_GET["id_post"];
+            $params_posts_topic ["id_post"] = $_GET["id_post"];
         }
         if ( $paramsGet["post_date"] ) {
-            $param_posts_topic ["post_date"] = $_GET["post_date"];
+            $params_posts_topic ["post_date"] = $_GET["post_date"];
         }
 
-        return $param_posts_topic;
+        return $params_posts_topic;
     }
 ?>

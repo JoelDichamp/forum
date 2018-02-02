@@ -43,7 +43,7 @@
             echo PutNavPagesTopics($index_page);
         ?>
     </div>
-
+    
     <table id="t_topics">
         <tr>
             <th class="head_topic">Sujet</th>

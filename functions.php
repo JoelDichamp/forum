@@ -16,6 +16,7 @@ define("CAN_EDIT_POST", 4);
 define("CAN_DELETE_POST", 5);
 define("CAN_DELETE_ALL_POST", 6);
 define("CAN_CREATE_CATEGORY", 7);
+define("CAN_CLOSE_TOPIC", 8);
 
 // roles
 define("USER", 1);
@@ -301,7 +302,7 @@ function topicExists( $topic, $id_category ) {
 
 function createTopic( $id_category, $topic, &$last_id_topic) {
     $connection = getConnection();
-    $sql = "INSERT INTO topics VALUES (null, ?, ?, ?, 1, ?)";
+    $sql = "INSERT INTO topics VALUES (null, ?, ?, ?, 1, ?, 0)";
     $statement = mysqli_prepare( $connection, $sql );
     $last_msg_date = date("Y-m-d H:i:s");
     mysqli_stmt_bind_param( 
@@ -338,6 +339,29 @@ function deleteTopic( $id_topic) {
     mysqli_close( $connection );
 
     return (boolean)($deleted > 0);
+}
+
+function reopenCloseTopic( $id_topic, &$topic_closed ) {
+    $connection = getConnection();
+    $sql = "UPDATE topics SET topic_closed=? WHERE id=?";
+    $statement = mysqli_prepare( $connection, $sql );
+    
+    if ($topic_closed == 0) {//topic était ouvert, on le ferme
+        $topic_closed = 1;
+    } else if ($topic_closed == 1) { //topic était fermé, on le rouvre
+        $topic_closed = 0;
+    } else { //erreur
+        return false;
+    }
+
+    mysqli_stmt_bind_param( $statement, "ii", $topic_closed, $id_topic);
+    mysqli_stmt_execute( $statement );
+    $edited = mysqli_stmt_affected_rows( $statement );
+    
+    mysqli_stmt_close( $statement );
+    mysqli_close( $connection );
+
+    return $edited;
 }
 
 function createPost( $id_topic, $id_category, $post ) {
@@ -468,7 +492,7 @@ function getTopics( $index_page ) {
 
     $close_where = build_close_where_filter_category( $filter_category, "categories" );
 
-    $sql = "SELECT topics.id,topic,category,categories.id,pseudo,nb_posts,
+    $sql = "SELECT topics.id,topic,topic_closed,category,categories.id,pseudo,nb_posts,
                    DATE_FORMAT(last_msg_date,'%d/%m/%Y %Hh%imin%ss'),users.id FROM topics 
             JOIN categories ON categories.id=id_category
             JOIN users ON users.id=id_user" . $close_where .
@@ -486,13 +510,14 @@ function getTopics( $index_page ) {
     }
     
     mysqli_stmt_execute( $statement );
-    mysqli_stmt_bind_result( $statement, $id, $topic, $category, $id_category, $pseudo, 
+    mysqli_stmt_bind_result( $statement, $id, $topic, $topic_closed, $category, $id_category, $pseudo, 
                                         $nb_posts, $last_msg_date, $id_user );
     $topics = [];
     while ( mysqli_stmt_fetch( $statement ) ) {
         $topics[] = [
             "id_topic" => $id,
             "topic" => $topic,
+            "topic_closed" => $topic_closed,
             "category" => $category,
             "id_category" => $id_category,
             "pseudo" => $pseudo,

@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Client :  127.0.0.1
--- Généré le :  Mar 30 Janvier 2018 à 14:57
+-- Généré le :  Ven 02 Février 2018 à 07:00
 -- Version du serveur :  5.7.14
--- Version de PHP :  5.6.25
+-- Version de PHP :  7.0.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -69,7 +69,8 @@ INSERT INTO `grants` (`id`, `grant_name`) VALUES
 (4, 'CAN_EDIT_POST'),
 (5, 'CAN_DELETE_POST'),
 (6, 'CAN_DELETE_ALL_POST'),
-(7, 'CAN_CREATE_CATEGORY');
+(7, 'CAN_CREATE_CATEGORY'),
+(8, 'CAN_CLOSE_TOPIC');
 
 -- --------------------------------------------------------
 
@@ -101,7 +102,9 @@ INSERT INTO `link_role_grant` (`id_role`, `id_grant`) VALUES
 (3, 5),
 (2, 6),
 (3, 6),
-(3, 7);
+(3, 7),
+(2, 8),
+(3, 8);
 
 -- --------------------------------------------------------
 
@@ -125,11 +128,7 @@ CREATE TABLE `posts` (
 INSERT INTO `posts` (`id`, `id_topic`, `id_category`, `id_user`, `post`, `post_date`) VALUES
 (8, 14, 2, 3, 'Difficile de\r\ns\'y faire', '2018-01-25 10:48:43'),
 (9, 15, 3, 3, 'Je ne sais\r\npas ...', '2018-01-25 11:05:43'),
-(10, 17, 2, 3, 'Mieux que le procÃ©dural', '2018-01-25 12:46:29'),
 (11, 18, 2, 3, 'Quoi ?', '2018-01-25 19:10:01'),
-(43, 17, 2, 3, 'aaa', '2018-01-28 14:15:06'),
-(44, 17, 2, 3, 'bbb', '2018-01-28 14:15:11'),
-(45, 17, 2, 3, 'ccc', '2018-01-28 14:15:26'),
 (46, 15, 3, 3, 'moi non plus', '2018-01-28 14:15:53'),
 (47, 15, 3, 3, '???', '2018-01-28 14:16:02'),
 (51, 21, 2, 4, 'Cool', '2018-01-29 10:38:22'),
@@ -140,7 +139,11 @@ INSERT INTO `posts` (`id`, `id_topic`, `id_category`, `id_user`, `post`, `post_d
 (87, 22, 5, 4, 'gggg', '2018-01-29 20:40:50'),
 (89, 22, 5, 3, 'yyy', '2018-01-29 21:03:06'),
 (92, 21, 2, 3, 'aaa', '2018-01-30 06:42:07'),
-(93, 17, 2, 5, 'coucou', '2018-01-30 14:14:31');
+(98, 25, 7, 4, '????????????', '2018-02-01 21:13:03'),
+(99, 26, 1, 4, 'Si si', '2018-02-01 21:13:45'),
+(100, 26, 1, 3, 'Non non', '2018-02-01 21:14:29'),
+(101, 21, 2, 3, 'bbb', '2018-02-01 21:14:50'),
+(102, 21, 2, 3, 'ccc', '2018-02-01 21:14:54');
 
 -- --------------------------------------------------------
 
@@ -174,20 +177,22 @@ CREATE TABLE `topics` (
   `id_user` int(11) NOT NULL,
   `topic` varchar(255) NOT NULL,
   `nb_posts` int(11) NOT NULL,
-  `last_msg_date` datetime NOT NULL
+  `last_msg_date` datetime NOT NULL,
+  `topic_closed` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Contenu de la table `topics`
 --
 
-INSERT INTO `topics` (`id`, `id_category`, `id_user`, `topic`, `nb_posts`, `last_msg_date`) VALUES
-(14, 2, 3, 'Langage sans type !', 1, '2018-01-25 10:48:43'),
-(15, 3, 3, 'Node js qu\'est-ce ?', 3, '2018-01-28 14:16:02'),
-(17, 2, 3, 'PHP objet', 5, '2018-01-30 14:14:32'),
-(18, 2, 3, 'PHP c\'est fou ce que cela peut faire causer en bien ou en mal mais cela fait parler', 1, '2018-01-25 19:10:01'),
-(21, 2, 4, 'PHP cool', 2, '2018-01-30 06:42:07'),
-(22, 5, 4, 'truc', 6, '2018-01-29 20:50:11');
+INSERT INTO `topics` (`id`, `id_category`, `id_user`, `topic`, `nb_posts`, `last_msg_date`, `topic_closed`) VALUES
+(14, 2, 3, 'Langage sans type !', 1, '2018-01-25 10:48:43', 0),
+(15, 3, 3, 'Node js qu\'est-ce ?', 3, '2018-01-28 14:16:02', 0),
+(18, 2, 3, 'PHP c\'est fou ce que cela peut faire causer en bien ou en mal mais cela fait parler', 1, '2018-01-25 19:10:01', 0),
+(21, 2, 4, 'PHP cool', 4, '2018-02-01 21:14:55', 0),
+(22, 5, 4, 'truc', 6, '2018-01-29 20:50:11', 0),
+(25, 7, 4, 'Pour quoi faire ?', 1, '2018-02-01 21:13:03', 0),
+(26, 1, 4, 'Langage difficile', 2, '2018-02-01 21:14:29', 0);
 
 -- --------------------------------------------------------
 
@@ -280,12 +285,12 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT pour la table `grants`
 --
 ALTER TABLE `grants`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 --
 -- AUTO_INCREMENT pour la table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=103;
 --
 -- AUTO_INCREMENT pour la table `roles`
 --
@@ -295,7 +300,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT pour la table `topics`
 --
 ALTER TABLE `topics`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 --
 -- AUTO_INCREMENT pour la table `users`
 --
